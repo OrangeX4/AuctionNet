@@ -87,11 +87,11 @@ class Actor(nn.Module):
         std = log_std.exp()
         dist = Normal(mu, std)
         action = dist.rsample()
-        return action.detach().cpu()
+        return action.detach()
 
     def get_det_action(self, obs):
         mu, _ = self.forward(obs)
-        return mu.detach().cpu()
+        return mu.detach()
 
 
 class IQL(nn.Module):
@@ -127,6 +127,7 @@ class IQL(nn.Module):
         self.actor_optimizer = Adam(self.actors.parameters(), lr=self.actor_lr)
         self.deterministic_action = True
         self.use_cuda = torch.cuda.is_available()
+        self.device = torch.device("cuda:0" if self.use_cuda else "cpu")
         if self.use_cuda:
             self.critic1.cuda()
             self.critic2.cuda()
@@ -140,6 +141,12 @@ class IQL(nn.Module):
         '''
         train model
         '''
+        # Transfer data to the correct device (CPU or CUDA)
+        states = states.to(self.device)
+        actions = actions.to(self.device)
+        rewards = rewards.to(self.device)
+        next_states = next_states.to(self.device)
+        dones = dones.to(self.device)
 
         self.value_optimizer.zero_grad()
         value_loss = self.calc_value_loss(states, actions)
@@ -168,7 +175,11 @@ class IQL(nn.Module):
         '''
         take action
         '''
-        states = torch.Tensor(states).type(self.FloatTensor)
+        # Handle both numpy arrays and tensors, and ensure correct device
+        if not isinstance(states, torch.Tensor):
+            states = torch.Tensor(states)
+        states = states.to(self.device)
+        
         if self.deterministic_action:
             actions = self.actors.get_det_action(states)
         else:
@@ -191,7 +202,7 @@ class IQL(nn.Module):
             min_Q = torch.min(q1, q2)
 
         exp_a = torch.exp(min_Q - v) * self.temperature
-        exp_a = torch.min(exp_a, torch.FloatTensor([100.0]))
+        exp_a = torch.min(exp_a, torch.FloatTensor([100.0]).to(self.device))
 
         _, dist = self.actors.evaluate(states)
         log_probs = dist.log_prob(actions)
@@ -237,8 +248,13 @@ class IQL(nn.Module):
     def save_jit(self, save_path):
         if not os.path.isdir(save_path):
             os.makedirs(save_path)
+        # Save current device
+        current_device = next(self.parameters()).device
+        # Move to CPU for saving
         jit_model = torch.jit.script(self.cpu())
         torch.jit.save(jit_model, f'{save_path}/iql_model.pth')
+        # Move back to original device
+        self.to(current_device)
 
     def load_net(self, load_path="saved_model/fixed_initial_budget", device='cuda:0'):
         '''
