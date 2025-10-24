@@ -29,11 +29,23 @@ def run_test():
 
     data_loader = TestDataLoader(file_path='./data/traffic/period-7.csv')
     env = OfflineEnv()
-    agent = PlayerBiddingStrategy()
-    print(agent.name)
 
     keys, test_dict = data_loader.keys, data_loader.test_dict
     key = keys[0]
+
+    # 从数据中读取正确的预算和CPA约束
+    test_data = test_dict[key]
+    actual_budget = test_data['budget'].iloc[0]
+    actual_cpa = test_data['CPAConstraint'].iloc[0]
+
+    logger.info(f'Testing advertiser: deliveryPeriod={key[0]}, advertiser={key[1]}')
+    logger.info(f'Actual budget from data: {actual_budget}')
+    logger.info(f'Actual CPA constraint from data: {actual_cpa}')
+
+    # 使用数据中的真实参数初始化策略
+    agent = PlayerBiddingStrategy(budget=actual_budget, cpa=actual_cpa)
+    print(agent.name)
+
     num_timeStepIndex, pValues, pValueSigmas, leastWinningCosts = data_loader.mock_data(key)
     rewards = np.zeros(num_timeStepIndex)
     history = {
