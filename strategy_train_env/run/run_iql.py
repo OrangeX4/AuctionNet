@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 import logging
 from bidding_train_env.common.utils import normalize_state, normalize_reward, save_normalize_dict
 from bidding_train_env.baseline.iql.replay_buffer import ReplayBuffer
@@ -41,7 +42,7 @@ def train_iql_model():
         training_data['reward'] = normalize_reward(training_data, "reward_continuous")
         # select use sparse reward
         # training_data['reward'] = normalize_reward(training_data, "reward")
-        save_normalize_dict(normalize_dic, "saved_model/IQLtest")
+        save_normalize_dict(normalize_dic, "log/IQLtest")
 
     # Build replay buffer
     replay_buffer = ReplayBuffer()
@@ -53,7 +54,7 @@ def train_iql_model():
     train_model_steps(model, replay_buffer)
 
     # Save model
-    model.save_jit("saved_model/IQLtest")
+    model.save_jit("log/IQLtest")
 
     # Test trained model
     test_trained_model(model, replay_buffer)
@@ -95,4 +96,6 @@ def run_iql():
 
 
 if __name__ == '__main__':
+    torch.manual_seed(1)
+    np.random.seed(1)
     run_iql()

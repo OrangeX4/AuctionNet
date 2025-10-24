@@ -23,8 +23,8 @@ class CqlBiddingStrategy(BaseBiddingStrategy):
         file_name = os.path.dirname(os.path.realpath(__file__))
         dir_name = os.path.dirname(file_name)
         dir_name = os.path.dirname(dir_name)
-        model_path = os.path.join(dir_name, "saved_model", "CQLtest", "cql_model.pth")
-        dict_path = os.path.join(dir_name, "saved_model", "CQLtest", "normalize_dict.pkl")
+        model_path = os.path.join(dir_name, "log", "CQLtest", "cql_model.pth")
+        dict_path = os.path.join(dir_name, "log", "CQLtest", "normalize_dict.pkl")
         self.model = torch.jit.load(model_path)
         with open(dict_path, 'rb') as file:
             self.normalize_dict = pickle.load(file)

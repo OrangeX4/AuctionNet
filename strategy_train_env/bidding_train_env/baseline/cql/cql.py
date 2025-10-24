@@ -218,7 +218,7 @@ class CQL(nn.Module):
         scripted_policy = torch.jit.script(self.cpu())
         scripted_policy.save(save_path + "/cql_model" + ".pth")
 
-    def load_net(self, load_path="saved_model/fixed_initial_budget", device='cuda:0') -> None:
+    def load_net(self, load_path="log/fixed_initial_budget", device='cuda:0') -> None:
         '''
         load model
         '''

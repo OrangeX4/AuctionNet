@@ -46,54 +46,31 @@ python  bidding_train_env/train_data_generator/train_data_generator.py
 #### IQL(Implicit Q-learning) Model
 Load the training data and train the IQL bidding strategy.
 ```
-python main/main_iql.py 
+python run/run_iql.py 
 ```
-Use the IqlBiddingStrategy as the PlayerBiddingStrategy for evaluation.
-```
-bidding_train_env/strategy/__init__.py
-from .iql_bidding_strategy import IqlBiddingStrategy as PlayerBiddingStrategy
-```
+
 #### BC(behavior cloning) Model
 Load the training data and train the BC bidding strategy.
 ```
-python main/main_bc.py 
-```
-Use the BcBiddingStrategy as the PlayerBiddingStrategy for evaluation.
-```
-bidding_train_env/strategy/__init__.py
-from .bc_bidding_strategy import BcBiddingStrategy as PlayerBiddingStrategy
+python run/run_bc.py 
 ```
 
 #### BCQ  Model
 Load the training data and train the BCQ bidding strategy.
 ```
-python main/main_bcq.py 
+python run/run_bcq.py 
 ```
-Use the BcqBiddingStrategy as the PlayerBiddingStrategy for evaluation.
-```
-bidding_train_env/strategy/__init__.py
-# from .bcq_bidding_strategy import BcqBiddingStrategy as PlayerBiddingStrategy
-```
-#### IQL  Model
+
+#### CQL  Model
 Load the training data and train the CQL bidding strategy.
 ```
-python main/main_cql.py 
-```
-Use the CqlBiddingStrategy as the PlayerBiddingStrategy for evaluation.
-```
-bidding_train_env/strategy/__init__.py
-# from .cql_bidding_strategy import CqlBiddingStrategy as PlayerBiddingStrategy
+python run/run_cql.py 
 ```
 
 #### TD3_BC  Model
 Load the training data and train the TD3_BC bidding strategy.
 ```
-python main/main_td3_bc.py 
-```
-Use the TD3_BCBiddingStrategy as the PlayerBiddingStrategy for evaluation.
-```
-bidding_train_env/strategy/__init__.py
-from .td3_bc_bidding_strategy import TD3_BCBiddingStrategy as PlayerBiddingStrategy
+python run/run_td3_bc.py 
 ```
 
 
@@ -101,23 +78,14 @@ from .td3_bc_bidding_strategy import TD3_BCBiddingStrategy as PlayerBiddingStrat
 #### OnlineLp Model
 Load the training data and train the OnlineLp bidding strategy.
 ```
-python main/main_onlineLp.py 
+python run/run_onlinelp.py 
 ```
-Use the OnlineLpBiddingStrategy as the PlayerBiddingStrategy for evaluation.
-```
-bidding_train_env/strategy/__init__.py
-# from .onlinelp_bidding_strategy import OnlineLpBiddingStrategy as PlayerBiddingStrategy
-```
+
 ### Generative Model
 #### Decision-Transformer
 Load the training data and train the DT bidding strategy.
 ```
-python main/main_decision_transformer.py 
-```
-Use the DtBiddingStrategy as the PlayerBiddingStrategy for evaluation.
-```
-bidding_train_env/strategy/__init__.py
-from .dt_bidding_strategy import DtBiddingStrategy as PlayerBiddingStrategy
+python run/run_decision_transformer.py 
 ```
 
 
@@ -126,6 +94,21 @@ from .dt_bidding_strategy import DtBiddingStrategy as PlayerBiddingStrategy
 ## offline evaluation
 Load the raw data on ad opportunities granularity to construct an offline evaluation environment for assessing the bidding strategy offline.
 ```
-python main/main_test.py
+python run/run_evaluate.py --algorithm <algorithm>
+```
+For example, to evaluate the IQL strategy:
+```
+python run/run_evaluate.py --algorithm iql
 ```
 
+```
+python run/run_evaluate.py --help 
+usage: run_evaluate.py [-h] [--algo {iql,bc,bcq,cql,td3_bc,onlinelp,dt}]
+
+Run offline evaluation for bidding strategies.
+
+options:
+  -h, --help            show this help message and exit
+  --algo {iql,bc,bcq,cql,td3_bc,onlinelp,dt}
+                        The bidding algorithm to evaluate.
+```

@@ -40,7 +40,7 @@ def train_cql_model():
     if is_normalize:
         normalize_dic = normalize_state(training_data, STATE_DIM, normalize_indices=[13, 14, 15])
         training_data['reward'] = normalize_reward(training_data, "reward_continuous")
-        save_normalize_dict(normalize_dic, "saved_model/CQLtest")
+        save_normalize_dict(normalize_dic, "log/CQLtest")
 
     # Build replay buffer
     replay_buffer = ReplayBuffer()
@@ -52,8 +52,8 @@ def train_cql_model():
     train_model_steps(model, replay_buffer)
 
     # Save model
-    # model.save_net("saved_model/CQLtest")
-    model.save_jit("saved_model/CQLtest")
+    # model.save_net("log/CQLtest")
+    model.save_jit("log/CQLtest")
 
     # Test trained model
     test_trained_model(model, replay_buffer)
@@ -93,4 +93,6 @@ def run_cql():
     train_cql_model()
 
 if __name__ == '__main__':
+    torch.manual_seed(1)
+    np.random.seed(1)
     run_cql()

@@ -52,7 +52,7 @@ def train_model():
 
     normalize_dic = normalize_state(training_data, state_dim, normalize_indices)
     normalize_reward(training_data, "reward_continuous")
-    save_normalize_dict(normalize_dic, "saved_model/BCtest")
+    save_normalize_dict(normalize_dic, "log/BCtest")
 
     replay_buffer = ReplayBuffer()
     add_to_replay_buffer(replay_buffer, training_data, is_normalize)
@@ -68,8 +68,8 @@ def train_model():
         a_loss = model.step(states, actions)
         logger.info(f"Step: {i} Action loss: {np.mean(a_loss)}")
 
-    # model.save_net("saved_model/BCtest")
-    model.save_jit("saved_model/BCtest")
+    # model.save_net("log/BCtest")
+    model.save_jit("log/BCtest")
     test_trained_model(model, replay_buffer)
 
 
@@ -78,7 +78,7 @@ def load_model():
     load model
     """
     model = BC(dim_obs=16)
-    model.load_net("saved_model/BCtest")
+    model.load_net("log/BCtest")
     test_state = np.ones(16, dtype=np.float32)
     test_state_tensor = torch.tensor(test_state, dtype=torch.float)
     logger.info(f"Test action: {model.take_actions(test_state_tensor)}")
@@ -105,4 +105,6 @@ def test_trained_model(model, replay_buffer):
 
 
 if __name__ == "__main__":
+    torch.manual_seed(1)
+    np.random.seed(1)
     run_bc()

@@ -14,7 +14,7 @@ class OnlineLpBiddingStrategy(BaseBiddingStrategy):
         file_name = os.path.dirname(os.path.realpath(__file__))
         dir_name = os.path.dirname(file_name)
         dir_name = os.path.dirname(dir_name)
-        model_path = os.path.join(dir_name, "saved_model", "onlineLpTest", f"period.csv")
+        model_path = os.path.join(dir_name, "log", "onlineLpTest", f"period.csv")
         self.category = category
 
         self.model = pd.read_csv(model_path)

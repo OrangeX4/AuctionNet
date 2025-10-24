@@ -41,7 +41,7 @@ def train_td3_bc_model():
     if is_normalize:
         normalize_dic = normalize_state(training_data, STATE_DIM, normalize_indices=[13, 14, 15])
         training_data['reward'] = normalize_reward(training_data, "reward_continuous")
-        save_normalize_dict(normalize_dic, "saved_model/TD3_bctest")
+        save_normalize_dict(normalize_dic, "log/TD3_bctest")
 
     # Build replay buffer
     replay_buffer = ReplayBuffer()
@@ -53,8 +53,8 @@ def train_td3_bc_model():
     train_model_steps(model, replay_buffer)
 
     # Save model
-    # model.save_net("saved_model/TD3_bctest")
-    model.save_jit("saved_model/TD3_bctest")
+    # model.save_net("log/TD3_bctest")
+    model.save_jit("log/TD3_bctest")
 
     # Test trained model
     test_trained_model(model, replay_buffer)
@@ -92,4 +92,6 @@ def run_td3_bc():
     train_td3_bc_model()
 
 if __name__ == '__main__':
+    torch.manual_seed(1)
+    np.random.seed(1)
     run_td3_bc()

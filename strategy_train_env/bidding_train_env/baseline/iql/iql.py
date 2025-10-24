@@ -256,7 +256,7 @@ class IQL(nn.Module):
         # Move back to original device
         self.to(current_device)
 
-    def load_net(self, load_path="saved_model/fixed_initial_budget", device='cuda:0'):
+    def load_net(self, load_path="log/fixed_initial_budget", device='cuda:0'):
         '''
         load model
         '''

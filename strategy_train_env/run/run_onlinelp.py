@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 def train_onlineLpModel():
     onlineLp = OnlineLp("./data/traffic/")
-    onlineLp.train("saved_model/onlineLpTest")
+    onlineLp.train("log/onlineLpTest")
 
 
 def run_onlineLp():
@@ -24,4 +24,6 @@ def run_onlineLp():
 
 
 if __name__ == '__main__':
+    torch.manual_seed(1)
+    np.random.seed(1)
     run_onlineLp()

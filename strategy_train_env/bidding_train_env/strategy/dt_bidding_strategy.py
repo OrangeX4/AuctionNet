@@ -3,7 +3,7 @@ import gin
 import numpy as np
 import os
 import psutil
-# from saved_model.DTtest.dt import DecisionTransformer
+# from log.DTtest.dt import DecisionTransformer
 from bidding_train_env.baseline.dt.dt import DecisionTransformer
 from bidding_train_env.strategy.base_bidding_strategy import BaseBiddingStrategy
 import torch
@@ -21,8 +21,8 @@ class DtBiddingStrategy(BaseBiddingStrategy):
         file_name = os.path.dirname(os.path.realpath(__file__))
         dir_name = os.path.dirname(file_name)
         dir_name = os.path.dirname(dir_name)
-        model_path = os.path.join(dir_name, "saved_model", "DTtest", "dt.pt")
-        picklePath = os.path.join(dir_name, "saved_model", "DTtest", "normalize_dict.pkl")
+        model_path = os.path.join(dir_name, "log", "DTtest", "dt.pt")
+        picklePath = os.path.join(dir_name, "log", "DTtest", "normalize_dict.pkl")
 
         with open(picklePath, 'rb') as f:
             normalize_dict = pickle.load(f)

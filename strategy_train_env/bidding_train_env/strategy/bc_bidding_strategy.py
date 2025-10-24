@@ -17,8 +17,8 @@ class BcBiddingStrategy(BaseBiddingStrategy):
         file_name = os.path.dirname(os.path.realpath(__file__))
         dir_name = os.path.dirname(file_name)
         dir_name = os.path.dirname(dir_name)
-        model_path = os.path.join(dir_name, "saved_model", "BCtest", "bc_model.pth")
-        dict_path = os.path.join(dir_name, "saved_model", "BCtest", "normalize_dict.pkl")
+        model_path = os.path.join(dir_name, "log", "BCtest", "bc_model.pth")
+        dict_path = os.path.join(dir_name, "log", "BCtest", "normalize_dict.pkl")
 
         self.model = torch.jit.load(model_path)
 

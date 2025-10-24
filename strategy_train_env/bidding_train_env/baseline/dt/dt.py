@@ -277,7 +277,7 @@ class DecisionTransformer(nn.Module):
         jit_model = torch.jit.script(self.cpu())
         torch.jit.save(jit_model, f'{save_path}/dt_model.pth')
 
-    def load_net(self, load_path="saved_model/DTtest", device='cpu'):
+    def load_net(self, load_path="log/DTtest", device='cpu'):
         file_path = load_path
         self.load_state_dict(torch.load(file_path, map_location=device))
         print(f"Model loaded from {self.device}.")

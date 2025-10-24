@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 from bidding_train_env.common.utils import normalize_state, normalize_reward, save_normalize_dict
 from bidding_train_env.baseline.dt.utils import EpisodeReplayBuffer
 from bidding_train_env.baseline.dt.dt import DecisionTransformer
@@ -24,7 +25,7 @@ def train_model():
     # replay_buffer = EpisodeReplayBuffer(16, 1, "./data/trajectory/trajectory_data.csv")
     replay_buffer = EpisodeReplayBuffer(16, 1, "./data/traffic/training_data_rlData_folder/training_data_all-rlData.csv")
     save_normalize_dict({"state_mean": replay_buffer.state_mean, "state_std": replay_buffer.state_std},
-                        "saved_model/DTtest")
+                        "log/DTtest")
     logger.info(f"Replay buffer size: {len(replay_buffer.trajectories)}")
 
     model = DecisionTransformer(state_dim=state_dim, act_dim=1, state_mean=replay_buffer.state_mean,
@@ -42,7 +43,7 @@ def train_model():
         logger.info(f"Step: {i} Action loss: {np.mean(train_loss)}")
         model.scheduler.step()
 
-    model.save_net("saved_model/DTtest")
+    model.save_net("log/DTtest")
     test_state = np.ones(state_dim, dtype=np.float32)
     logger.info(f"Test action: {model.take_actions(test_state)}")
 
@@ -51,14 +52,16 @@ def load_model():
     """
     加载模型。
     """
-    with open('./Model/DT/saved_model/normalize_dict.pkl', 'rb') as f:
+    with open('./Model/DT/log/normalize_dict.pkl', 'rb') as f:
         normalize_dict = pickle.load(f)
     model = DecisionTransformer(state_dim=16, act_dim=1, state_mean=normalize_dict["state_mean"],
                                 state_std=normalize_dict["state_std"])
-    model.load_net("Model/DT/saved_model")
+    model.load_net("Model/DT/log")
     test_state = np.ones(16, dtype=np.float32)
     logger.info(f"Test action: {model.take_actions(test_state)}")
 
 
 if __name__ == "__main__":
+    torch.manual_seed(1)
+    np.random.seed(1)
     run_dt()

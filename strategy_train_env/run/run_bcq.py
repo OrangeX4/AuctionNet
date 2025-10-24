@@ -42,7 +42,7 @@ def train_bcq_model():
     if is_normalize:
         normalize_dic = normalize_state(training_data, STATE_DIM, normalize_indices=[13, 14, 15])
         training_data['reward'] = normalize_reward(training_data, "reward_continuous")
-        save_normalize_dict(normalize_dic, "saved_model/BCQtest")
+        save_normalize_dict(normalize_dic, "log/BCQtest")
 
     # Build replay buffer
     replay_buffer = ReplayBuffer()
@@ -54,8 +54,8 @@ def train_bcq_model():
     train_model_steps(model, replay_buffer)
 
     # Save model
-    # model.save_net("saved_model/BCQtest")
-    model.save_jit("saved_model/BCQtest")
+    # model.save_net("log/BCQtest")
+    model.save_jit("log/BCQtest")
 
     # Test trained model
     test_trained_model(model, replay_buffer)
@@ -98,4 +98,6 @@ def run_bcq():
 
 
 if __name__ == '__main__':
+    torch.manual_seed(1)
+    np.random.seed(1)
     run_bcq()

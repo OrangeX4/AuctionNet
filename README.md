@@ -75,9 +75,8 @@ Then, each agent may win some impressions (IV), which may be exposed to users an
 │   │   ├── offline_eval          # Components required for offline evaluation.
 │   │   └── strategy              # Unified bidding strategy interface.
 │   ├── data                      # Directory for storing training data.
-│   ├── main                      # Main scripts for executing training processes.
 │   ├── run                       # Core logic for executing training processes.
-│   ├── saved_model               # Directory for saving trained models.
+│   ├── log               # Directory for saving trained models.
 
 ```
 
@@ -113,7 +112,7 @@ python  bidding_train_env/train_data_generator/train_data_generator.py
 #### Strategy Training
 Load the training data and train the xxx (for example, IQL) bidding strategy.
 ```
-python main/main_iql.py 
+python run/run_iql.py 
 ```
 
 Use the xxxBiddingStrategy as the PlayerBiddingStrategy for evaluation.
@@ -153,8 +152,6 @@ Refer to the baseline algorithm implementation and complete the following files.
 │   │   │   └── train_data_generator.py         # Custom-built training Data generation Pipeline.
 │   │   └── strategy
 │   │       └── awesome_xx_bidding_strategy.py  # Implement Unified bidding strategy interface.
-│   ├── main
-│   │   └── main_awesome_xx.py                  # Main scripts for executing training processes.
 │   └── run
 │       └── run_awesome_xx.py                   # Core logic for executing training processes.
 

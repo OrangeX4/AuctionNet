@@ -1,7 +1,13 @@
 import numpy as np
 import math
 import logging
-from bidding_train_env.strategy import PlayerBiddingStrategy
+import argparse
+import importlib
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from bidding_train_env.offline_eval.test_dataloader import TestDataLoader
 from bidding_train_env.offline_eval.offline_env import OfflineEnv
 
@@ -13,6 +19,27 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def get_strategy_class(algorithm):
+    """
+    Dynamically import the bidding strategy class based on the algorithm name.
+    """
+    strategy_map = {
+        'iql': ('bidding_train_env.strategy.iql_bidding_strategy', 'IqlBiddingStrategy'),
+        'bc': ('bidding_train_env.strategy.bc_bidding_strategy', 'BcBiddingStrategy'),
+        'bcq': ('bidding_train_env.strategy.bcq_bidding_strategy', 'BcqBiddingStrategy'),
+        'cql': ('bidding_train_env.strategy.cql_bidding_strategy', 'CqlBiddingStrategy'),
+        'td3_bc': ('bidding_train_env.strategy.td3_bc_bidding_strategy', 'TD3_BCBiddingStrategy'),
+        'onlinelp': ('bidding_train_env.strategy.onlinelp_bidding_strategy', 'OnlineLpBiddingStrategy'),
+        'dt': ('bidding_train_env.strategy.dt_bidding_strategy', 'DtBiddingStrategy'),
+    }
+    if algorithm not in strategy_map:
+        raise ValueError(f"Unsupported algorithm: {algorithm}. Supported: {list(strategy_map.keys())}")
+    
+    module_name, class_name = strategy_map[algorithm]
+    module = importlib.import_module(module_name)
+    return getattr(module, class_name)
+
+
 def getScore_neurips(reward, cpa, cpa_constraint):
     beta = 2
     penalty = 1
@@ -22,10 +49,11 @@ def getScore_neurips(reward, cpa, cpa_constraint):
     return penalty * reward
 
 
-def run_test():
+def run_test(algorithm):
     """
     offline evaluation
     """
+    PlayerBiddingStrategy = get_strategy_class(algorithm)
 
     data_loader = TestDataLoader(file_path='./data/traffic/period-7.csv')
     env = OfflineEnv()
@@ -112,4 +140,9 @@ def run_test():
 
 
 if __name__ == '__main__':
-    run_test()
+    parser = argparse.ArgumentParser(description='Run offline evaluation for bidding strategies.')
+    parser.add_argument('--algo', type=str, default='iql', 
+                        choices=['iql', 'bc', 'bcq', 'cql', 'td3_bc', 'onlinelp', 'dt'],
+                        help='The bidding algorithm to evaluate.')
+    args = parser.parse_args()
+    run_test(args.algo)
