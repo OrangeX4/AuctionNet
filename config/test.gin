@@ -1,7 +1,7 @@
 import gin
 import run.run_test
-import simul_bidding_env.Controller.Controller
-import simul_bidding_env.Environment.BiddingEnv
+import auctionbid.simul_bidding_env.Controller.Controller
+import auctionbid.simul_bidding_env.Environment.BiddingEnv
 
 
 # Reserve price

@@ -2,7 +2,7 @@ import sys
 
 sys.path.append("./strategy_train_env")
 import gin
-from run.run_test import run_test
+from examples.run_evaluate import run_test
 import torch
 import numpy as np
 

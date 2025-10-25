@@ -47,37 +47,27 @@ Then, each agent may win some impressions (IV), which may be exposed to users an
 ---
 
 ```
+├── auctionbid                    # Main package
+│   ├── baseline                  # Implementation of baseline bid decision-making algorithms.
+│   ├── common                    # Common utilities used across modules.
+│   ├── offline_eval              # Components required for offline evaluation.
+│   ├── simul_bidding_env         # Ad Auction Environment
+│   │   ├── Controller            # Module controlling the simulation flow and logic.
+│   │   ├── Environment           # The auction module.
+│   │   ├── PvGenerator           # The ad opportunity generation module.
+│   │   ├── Tracker               # Tracking components for monitoring and analysis.
+│   │   │   ├── BiddingTracker.py # Tracks the bidding process and generates raw data.
+│   │   │   ├── PlayerAnalysis.py # Implements metrics to evaluate performance.
+│   │   └── strategy              # The bidding module (competitors’ strategies).
+│   ├── strategy                  # Unified bidding strategy interface.
+│   └── train_data_generator      # Reads raw data and constructs training datasets.
 ├── config                        # Configuration files for setting up the hyperparameters.
+├── data                          # Directory for storing training data.
+├── examples                      # Example scripts for running algorithms.
+├── log                           # Directory for saving trained models.
 ├── main_test.py                  # Main entry point for running evaluations.
-├── run                           # Core logic for executing tests.
-
-├── simul_bidding_env             # Ad Auction Environment
-
-│   ├── Controller                # Module controlling the simulation flow and logic.
-│   ├── Environment               # The auction module.
-│   ├── PvGenerator               # The ad opportunity generation module.
-│   ├── Tracker                   # Tracking components for monitoring and analysis.
-│   │   ├── BiddingTracker.py     # Tracks the bidding process and generates raw data on ad opportunities granularity.
-│   │   ├── PlayerAnalysis.py     # Implements metrics to evaluate the performance of user-defined strategies.
-│   └── strategy                  # The bidding module (competitors’ strategies).
-
-
 ├── pre_generated_dataset         # Pre-generated dataset.
-
-
-├── strategy_train_env            # Several baseline bid decision-making algorithms.
-
-│   ├── README_strategy_train.md  # Documentation on how to train the bidding strategy.
-│   ├── bidding_train_env         # Core components for training bidding strategies.
-│   │   ├── baseline              # Implementation of baseline bid decision-making algorithms.
-│   │   ├── common                # Common utilities used across modules.
-│   │   ├── train_data_generator  # Reads raw data and constructs training datasets.
-│   │   ├── offline_eval          # Components required for offline evaluation.
-│   │   └── strategy              # Unified bidding strategy interface.
-│   ├── data                      # Directory for storing training data.
-│   ├── run                       # Core logic for executing training processes.
-│   ├── log               # Directory for saving trained models.
-
+└── requirements.txt              # Python dependencies.
 ```
 
 
@@ -87,44 +77,109 @@ Then, each agent may win some impressions (IV), which may be exposed to users an
 
 ---
 
-### Create and activate conda environment
+### Install
+
 ```bash
-$ conda create -n AuctionNet python=3.9.12 pip=23.0.1
-$ conda activate AuctionNet
-```
-### Install requirements
-```bash
-$ pip install -r requirements.txt
+$ pip install -e . --no-dependencies
 ```
 
 ### Train Strategy & Offline Evaluation
-*For detailed usage, please refer to `strategy_train_env/README_strategy_train.md`.*
+
+#### Data Processing
+
+Download the raw data on ad opportunities granularity and place it in the `data/traffic/` folder.
+
+The directory structure under data should be:
 
 ```
-cd strategy_train_env  # Enter the strategy_train directory
+data
+└── traffic
+    ├── period-7.csv
+    ├── period-8.csv
+    ├── period-9.csv
+    ├── period-10.csv
+    ├── period-11.csv
+    ├── period-12.csv
+    ├── period-13.csv
+    ├── period-14.csv
+    ├── period-15.csv
+    ├── period-16.csv
+    ├── period-17.csv
+    ├── period-18.csv
+    ├── period-19.csv
+    ├── period-20.csv
+    ├── period-21.csv
+    ├── period-22.csv
+    ├── period-23.csv
+    ├── period-24.csv
+    ├── period-25.csv
+    ├── period-26.csv
+    └── period-27.csv
 ```
-#### Data Processing
+
 Run this script to convert the raw data on ad opportunities granularity into trajectory data required for model training.
+
 ```
-python  bidding_train_env/train_data_generator/train_data_generator.py
+python auctionbid/train_data_generator/train_data_generator.py
 ```
 
 #### Strategy Training
-Load the training data and train the xxx (for example, IQL) bidding strategy.
+
+Load the training data and train the bidding strategy.
+
+##### Reinforcement Learning-based Bidding
+
+- **IQL (Implicit Q-learning)**: `python examples/run_iql.py`
+- **BC (Behavior Cloning)**: `python examples/run_bc.py`
+- **BCQ**: `python examples/run_bcq.py`
+- **CQL**: `python examples/run_cql.py`
+- **TD3_BC**: `python examples/run_td3_bc.py`
+
+##### Online Linear Programming-based Bidding
+
+- **OnlineLp**: `python examples/run_onlinelp.py`
+
+##### Generative Model
+
+#### Decision-Transformer
+Load the training data and train the DT bidding strategy.
 ```
-python run/run_iql.py 
+python examples/run_decision_transformer.py
 ```
 
-Use the xxxBiddingStrategy as the PlayerBiddingStrategy for evaluation.
+Use the trained strategy as the PlayerBiddingStrategy for evaluation.
+
 ```
-bidding_train_env/strategy/__init__.py
+auctionbid/strategy/__init__.py
 from .iql_bidding_strategy import IqlBiddingStrategy as PlayerBiddingStrategy
 ```
 
 #### Offline Evaluation
+
 Load the raw data on ad opportunities granularity to construct an offline evaluation environment for assessing the bidding strategy offline.
+
 ```
-python main/main_test.py
+python examples/run_evaluate.py --algo <algorithm>
+```
+
+For example, to evaluate the IQL strategy:
+
+```
+python examples/run_evaluate.py --algo iql
+```
+
+Available algorithms: iql, bc, bcq, cql, td3_bc, onlinelp, dt
+
+```
+python examples/run_evaluate.py --help 
+usage: run_evaluate.py [-h] [--algo {iql,bc,bcq,cql,td3_bc,onlinelp,dt}]
+
+Run offline evaluation for bidding strategies.
+
+options:
+  -h, --help            show this help message and exit
+  --algo {iql,bc,bcq,cql,td3_bc,onlinelp,dt}
+                        The bidding algorithm to evaluate.
 ```
 
 ### Online Evaluation
@@ -143,23 +198,21 @@ $ python main_test.py
 ### Train your own bidding strategy 'awesome_xx'
 Refer to the baseline algorithm implementation and complete the following files.
 ```
-├── strategy_train_env
-│   ├── bidding_train_env
-│   │   ├── baseline
-│   │   │   └── awesome_xx
-│   │   │       └──awesome_xx.py                # Implement model-related components.
-│   │   ├── train_data_generator
-│   │   │   └── train_data_generator.py         # Custom-built training Data generation Pipeline.
-│   │   └── strategy
-│   │       └── awesome_xx_bidding_strategy.py  # Implement Unified bidding strategy interface.
-│   └── run
-│       └── run_awesome_xx.py                   # Core logic for executing training processes.
-
+├── auctionbid
+│   ├── baseline
+│   │   └── awesome_xx
+│   │       └── awesome_xx.py                # Implement model-related components.
+│   ├── train_data_generator
+│   │   └── train_data_generator.py         # Custom-built training Data generation Pipeline.
+│   └── strategy
+│       └── awesome_xx_bidding_strategy.py  # Implement Unified bidding strategy interface.
+├── examples
+│   └── run_awesome_xx.py                   # Core logic for executing training processes.
 ```
 ### Evaluate your own bidding strategy 'awesome_xx'
 Use the awesome_xxBiddingStrategy as the PlayerBiddingStrategy for evaluation.
 ```
-bidding_train_env/strategy/__init__.py
+auctionbid/strategy/__init__.py
 from .awesome_xx_bidding_strategy import awesome_xxBiddingStrategy as PlayerBiddingStrategy
 ```
 Run the evaluation process.
@@ -183,8 +236,7 @@ The newly generated data will be stored in the /data folder.
 ### Customize new auction environment
 We adhere to the programming principles of high cohesion and low coupling to encapsulate each module, making it convenient for users to modify various modules in the auction environment according to their needs.
 ```
-├── simul_bidding_env             # Ad Auction Environment
-
+├── auctionbid/simul_bidding_env             # Ad Auction Environment
 │   ├── Environment               # The auction module.
 │   ├── PvGenerator               # The ad opportunity generation module.
 │   ├── Tracker                   
